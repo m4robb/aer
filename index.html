@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+<head>
+	<title></title>
+	
+		<link rel="stylesheet" href="css/style.css">
+ <script src="http://maps.google.com/maps?file=api&v=3.x&key=AIzaSyBeioOLOp_Obxn-azEj_xrZTmiUCM5Solo"
+    type="text/javascript"></script>
+    <script type="text/javascript" src="js/libs/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="js/libs/jquery-ui-1.8.19.custom.min.js"></script>
+    <script type="text/javascript" src="js/modernizr.js"></script>
+    <script type="text/javascript" src="js/jQuery.html5Loader.js"></script>
+    <script type="text/javascript" src="js/sky_map.js"></script>
+		<script src='js/helpers.js'></script>
+		<script src="js/codemirror.js"></script>   
+    <script type="text/javascript" src="js/popcorn.js"></script>
+    <script type="text/javascript" src="js/popcorn.code.js"></script>
+    <script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+    <script type="text/javascript" src="js/gl.js"></script>
+    <script type="text/javascript" src="js/main_timeline.js"></script>
+    <script type="text/javascript" src="js/dsp.js"></script>
+    
+
+		<script id="example" type="x-shader/x-fragment">
+			
+#ifdef GL_ES
+precision mediump float;
+#endif
+
+// Best viewed in low quality
+
+uniform float time;
+uniform float redshift;
+uniform vec2 mouse;
+uniform vec2 resolution;
+
+float rand(vec2 p) {
+	return fract(sin(dot(p.xy,vec2(1.9898,1.233)))*43758.5453);
+}
+
+vec3 noise(vec2 f) {
+	return vec3(rand(f-2.), rand(f), rand(f+30.));
+}
+
+void main( void ) {
+	vec3 c = (0.1 - noise(gl_FragCoord.xy * .125 * vec2(mod(time, .1), mod(time+0.05, .1)))) * mod(gl_FragCoord.y, 20.0*redshift);
+	float g = (c.x+c.y+c.z)/redshift;
+	gl_FragColor = vec4( g*1.125 - c*0.125, 1.);
+}
+</script>
+
+		<script id="fragmentShader" type="x-shader/x-fragment">
+
+			#ifdef GL_ES
+			precision mediump float;
+			#endif
+
+			uniform vec2 resolution;
+			uniform sampler2D texture;
+
+			void main() {
+
+				vec2 uv = gl_FragCoord.xy / resolution.xy;
+				gl_FragColor = texture2D( texture, uv );
+
+			}
+
+		</script>
+
+		<script id="vertexShader" type="x-shader/x-vertex">
+
+			attribute vec3 position;
+
+			void main() {
+
+				gl_Position = vec4( position, 1.0 );
+
+			}
+
+		</script>
+
+		<script id="surfaceVertexShader" type="x-shader/x-vertex">
+
+			attribute vec3 position;
+			attribute vec2 surfacePosAttrib;
+			varying vec2 surfacePosition;
+
+			void main() {
+
+				surfacePosition = surfacePosAttrib;
+				gl_Position = vec4( position, 1.0 );
+
+			}
+
+		</script>
+		 
+ 	<script language="JavaScript">
+
+		function init_page() {
+var webgl = new run_webgl($("#webgl_holder"))
+	 init_sky_view()   
+			//visualizer();
+		}
+
+		window.onload = init_page;
+		
+		function build_sky(){
+			$('#sky_map').fadeIn(1000)
+			$('#panel-4').fadeIn(1000)
+		}
+function goto(m){
+	if(m==2){
+		$('#panel-1').fadeOut(1000, function(){
+			//build_sky()
+			 $('#panel-2').fadeIn(1000)
+		})
+	}
+	
+		if(m==3){
+		$('#panel-2').fadeOut(1000, function(){
+			$('#panel-3').fadeIn(1000)
+		})
+	}
+	
+		if(m==4){
+		$('#panel-3').fadeOut(1000, function(){
+			//build_sky()
+			//$('#sky_map').fadeIn(1000)
+			document.getElementById("audio").play()
+		})
+	}	
+}
+	</script>
+	   
+</head>
+<body>
+	
+<div class="html5Loader"></div>
+<div id="webgl_holder"></div>
+<div id="webgl_hider"></div>		
+<div id="sky_map"></div>
+
+		
+
+	
+
+		
+		<div class="panel">
+			<p id="panel-1"><a href="javascript:goto(2)">This is an audio file of radio emissions from Saturn, shifted to a
+wavelength human ears can detect.</a></p>
+
+			<p id="panel-2" style="display:none"><a href="javascript:goto(3)">The Cassini spacecraft began detecting these radio emissions in April
+2002, when Cassini was 374 million kilometers (234 million miles) from
+the planet.
+ Cassini launched in 1997 to explore Saturn, its moons and disks. The
+mission is expected to last 20 years.</a></p>
+
+			<p id="panel-3" style="display:none"><a href="javascript:goto(4)">The next sound you are going to hear is that of an astronomer's voice.
+ He   is describing the beginning of this project in the broadest
+possible sense.  It begins when  people first had the time both to ask
+questions, and to invent tools to answer them.</a></p>
+
+			<p id="panel-4" style="display:none"><a href="javascript:window.location.reload()">This the sky you see at night. Use your mouse to drag and explore and use the controls to zoom. Or, click here to watch again</a>
+	</p>
+
+		</div>
+		
+
+<div class="video-wrap" id="video-wrap">
+	
+	<video class="bg-vid" id="video" volume=0 preload="auto">
+	</video>
+	
+</div>
+	
+	<div class="audio-player">
+		<audio id="audio" controls="true">
+			<source src="media/nick_lo_res.mp3" />
+			<source src="media/nick_lo_res.ogg" />
+		</audio>	
+	</div>
+
+	<div class="audio-player">
+		<audio id="bg-audio" autoplay loop  onloadedmetadata="loadedMetaData()">
+			<source src="media/saturn.wav" />
+		</audio>	
+	</div>
+		
+
+<script type="text/javascript">
+
+$('.html5Loader').html5Loader({
+		getFilesToLoadJSON:'js/files_d.json',
+		glowColor: '#ff0',
+		onComplete: init_timeline(),
+		lineWidth: 10
+})	
+</script>
+    
+<script language="JavaScript">
+///AUDIO API 
+///TODO Add in web audio functionality for Chrome
+      var magnitude = 0
+	    currentvalue = new Array();
+      var frameBufferSize = 4096;
+      var bufferSize = frameBufferSize/2;
+      
+      var signal = new Float32Array(bufferSize);
+      var peak = new Float32Array(bufferSize);
+      
+      var fft = new FFT(bufferSize, 44100);
+
+      function loadedMetaData(event) {
+        cassini_audio = document.getElementById('bg-audio');
+        cassini_audio.volume = 0.1
+        cassini_audio.mozFrameBufferLength = frameBufferSize;
+        cassini_audio.addEventListener("MozAudioAvailable", audioAvailable, false);
+      }
+     
+
+
+ 
+      function audioAvailable(event) {
+        // deinterleave and mix down to mono
+        signal = DSP.getChannel(DSP.MIX, event.frameBuffer);
+
+        // perform forward transform
+        fft.forward(signal);
+        
+        
+        
+        for ( var i = 0; i < bufferSize/8; i++ ) {
+          magnitude = fft.spectrum[i] * 8000; 					// multiply spectrum by a zoom value
+          currentvalue[i] = magnitude;
+
+        }
+
+      }
+
+</script>
+    	
+	
+</body>
+</html>

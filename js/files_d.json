@@ -1,0 +1,16 @@
+{
+		"files": [
+			{
+				"type":"AUDIO",
+				"audioId":"audio",
+				"mp3":{
+					"source":"media/nick_lo_res.mp3",
+					"size":4198.4
+				},
+				"ogg":{
+					"source":"media/nick_lo_res.ogg",
+					"size":2150.4
+				}
+			}
+		]
+	}
