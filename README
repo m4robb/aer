@@ -1,0 +1,8 @@
+aer-wisemen
+Apr 28-29, 2012
+
+Site created with Alison Rose (http://www.inigofilms.com/) for Mozilla's LivingDocs (http://livingdocs.org/) Hack Days at Hot Docs 2012 in Toronto.
+
+This site was created as demo, as part of Alison's upcoming online and feature documentary, FOLLOWING WISE MEN, a story about astronomy, astronomers, and the largeness of everything.
+
+The demo was created over a two-day period with code created from (almost!) scratch that lies heavily on Popcorn, HTML5 web audio API, digital signal processing library created by Corban Brooks, glsl shaders (via Mr Doobs glsl sandbox), Google Maps API (using sky map view, who knew!?), and a lot of bubblegum, string and duct tape..
